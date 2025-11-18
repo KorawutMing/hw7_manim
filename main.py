@@ -131,8 +131,8 @@ class SimplexPath3D(ThreeDScene):
             1: {  # Vertex D
                 "matrix": [
                     [r"--", r"0", r"7", r"2", r"0", r"-5", r"0"],
-                    [r"10", r"0", r"3/2", r"1", r"1", r"-1/2", r"0"],
-                    [r"10", r"1", r"1/2", r"1", r"0", r"1/2", r"0"],
+                    [r"10", r"0", r"\frac{3}{2}", r"1", r"1", r"-\frac{1}{2}", r"0"],
+                    [r"10", r"1", r"\frac{1}{2}", r"1", r"0", r"\frac{1}{2}", r"0"],
                     [r"0", r"0", r"1", r"-1", r"0", r"-1", r"1"]
                 ],
                 "basis": [r"\text{Z}", r"x_4", r"x_1", r"x_6"],
@@ -142,9 +142,9 @@ class SimplexPath3D(ThreeDScene):
             2: {  # Vertex B
                 "matrix": [
                     [r"--", r"0", r"4", r"0", r"-2", r"-4", r"0"],
-                    [r"10", r"0", r"3/2", r"1", r"1", r"-1/2", r"0"],
+                    [r"10", r"0", r"\frac{3}{2}", r"1", r"1", r"-\frac{1}{2}", r"0"],
                     [r"0", r"1", r"-1", r"0", r"-1", r"1", r"0"],
-                    [r"10", r"0", r"5/2", r"0", r"1", r"-3/2", r"1"]
+                    [r"10", r"0", r"\frac{5}{2}", r"0", r"1", r"-\frac{3}{2}", r"1"]
                 ],
                 "basis": [r"\text{Z}", r"x_3", r"x_1", r"x_6"],
                 "z_val": r"-120",
@@ -152,10 +152,10 @@ class SimplexPath3D(ThreeDScene):
             },
             3: {  # Vertex E (Optimal)
                 "matrix": [
-                    [r"--", r"0", r"0", r"0", r"-18/5", r"-8/5", r"-8/5"],
-                    [r"4", r"0", r"0", r"1", r"2/5", r"2/5", r"-3/5"],
-                    [r"4", r"1", r"0", r"0", r"-3/5", r"2/5", r"2/5"],
-                    [r"4", r"0", r"1", r"0", r"2/5", r"-3/5", r"2/5"]
+                    [r"--", r"0", r"0", r"0", r"-\frac{18}{5}", r"-\frac{8}{5}", r"-\frac{8}{5}"],
+                    [r"4", r"0", r"0", r"1", r"\frac{2}{5}", r"\frac{2}{5}", r"-\frac{3}{5}"],
+                    [r"4", r"1", r"0", r"0", r"-\frac{3}{5}", r"\frac{2}{5}", r"\frac{2}{5}"],
+                    [r"4", r"0", r"1", r"0", r"\frac{2}{5}", r"-\frac{3}{5}", r"\frac{2}{5}"]
                 ],
                 "basis": [r"\text{Z}", r"x_3", r"x_1", r"x_2"],
                 "z_val": r"-136",
@@ -204,7 +204,6 @@ class SimplexPath3D(ThreeDScene):
                 f"Pivot to: {vertex_label}",
                 font_size=20,
                 color=RED,
-                weight=BOLD
             ).to_edge(DOWN).shift(UP * 0.3)
 
             # Create arrow for movement
@@ -251,7 +250,6 @@ class SimplexPath3D(ThreeDScene):
                 "OPTIMAL SOLUTION FOUND!",
                 font_size=26,
                 color=GOLD,
-                weight=BOLD
             ),
             MathTex(
                 r"x_1 = 4, \quad x_2 = 4, \quad x_3 = 4",
@@ -292,41 +290,15 @@ class SimplexPath3D(ThreeDScene):
             element_to_mobject=lambda t: MathTex(t, font_size=18)
         )
         
-        # Add basis labels to the left of each row (including Z-row)
-        basis_group = VGroup()
-        for i, basis_var in enumerate(basis_labels):
-            label = MathTex(basis_var, font_size=18, color=YELLOW if i > 0 else BLUE)
-            # Position labels to the left of each row
-            row_position = table.get_rows()[i + 1].get_left()
-            label.next_to(row_position, LEFT, buff=0.32)
-            basis_group.add(label)
-        
-        # Create solution and Z-value display
-        solution_display = Text(
-            f"Solution: {solution}",
-            font_size=18,
-            color=YELLOW
-        )
-        
-        z_display = MathTex(
-            f"Z = {z_val}",
-            font_size=22,
-            color=GREEN if is_optimal else BLUE,
-            weight=BOLD if is_optimal else NORMAL
-        )
-        
-        info_group = VGroup(solution_display, z_display).arrange(RIGHT, buff=0.5).next_to(table, DOWN, buff=0.3)
-        
         # Title
         title = Text(
             "Simplex Tableau" if not is_optimal else "OPTIMAL TABLEAU",
             font_size=22,
-            weight=BOLD,
             color=GOLD if is_optimal else BLUE_B
         )
         
         # Arrange all components
-        tableau_content = VGroup(title, table, basis_group, info_group).arrange(DOWN, buff=0.28)
+        tableau_content = VGroup(title, table).arrange(DOWN, buff=0.28)
         
         # Add background rectangle
         bg_rect = SurroundingRectangle(
