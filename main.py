@@ -6,7 +6,7 @@ class SimplexPath3D(ThreeDScene):
         # --- 1. CONFIGURATION AND SETUP ---
         
         # Setup camera angle with zoom to fit polyhedron
-        self.set_camera_orientation(phi=70*DEGREES, theta=40*DEGREES, zoom=0.6)
+        self.set_camera_orientation(phi=70*DEGREES, theta=40*DEGREES, zoom=0.65)
         self.begin_ambient_camera_rotation(rate=0.08)
 
         # Create 3D axes
@@ -14,9 +14,9 @@ class SimplexPath3D(ThreeDScene):
             x_range=[0, 12, 2],
             y_range=[0, 12, 2],
             z_range=[0, 12, 2],
-            x_length=6,
-            y_length=6,
-            z_length=6,
+            x_length=5.5,
+            y_length=5.5,
+            z_length=5.5,
         )
         
         # Add axis labels with proper math mode
@@ -107,69 +107,67 @@ class SimplexPath3D(ThreeDScene):
         # Display objective function
         obj_func = MathTex(
             r"\text{Minimize: } Z = -10x_1 - 12x_2 - 12x_3",
-            font_size=28
-        ).to_corner(UL).shift(DOWN * 0.2)
+            font_size=22
+        ).to_corner(UL).shift(DOWN * 0.1 + RIGHT * 0.2)
         self.add_fixed_in_frame_mobjects(obj_func)
         self.play(Write(obj_func), run_time=1)
         self.wait(1)
         
-        # ===== PHASE 2: SIMPLEX PATH WITH FULL TABLEAUX =====
+        # ===== PHASE 2: SIMPLEX PATH WITH CORRECTED TABLEAUX =====
         
-        # Full Simplex tableau data with complete matrices
+        # Corrected Simplex tableau data (7 columns: Z-row values, then 3 constraint rows)
         tableau_data = {
             0: {  # Vertex A
                 "matrix": [
-                    [r"20", r"0", r"1", r"2", r"2", r"1", r"0", r"0"],
-                    [r"20", r"0", r"2", r"1", r"2", r"0", r"1", r"0"],
-                    [r"20", r"0", r"2", r"2", r"1", r"0", r"0", r"1"]
+                    [r"--", r"10", r"12", r"12", r"0", r"0", r"0"],
+                    [r"20", r"1", r"2", r"2", r"1", r"0", r"0"],
+                    [r"20", r"2", r"1", r"2", r"0", r"1", r"0"],
+                    [r"20", r"2", r"2", r"1", r"0", r"0", r"1"]
                 ],
-                "basis": [r"s_1", r"s_2", r"s_3"],
-                "z_val": r"0"
+                "basis": [r"\text{Z}", r"x_4", r"x_5", r"x_6"],
+                "z_val": r"0",
+                "solution": "[0, 0, 0]"
             },
             1: {  # Vertex D
                 "matrix": [
-                    [r"10", r"0", r"0", r"3/2", r"1/2", r"1", r"{-1/2}", r"0"],
-                    [r"10", r"0", r"1", r"1/2", r"1", r"0", r"1/2", r"0"],
-                    [r"0", r"0", r"0", r"1", r"{-1}", r"0", r"{-1}", r"1"]
+                    [r"--", r"0", r"7", r"2", r"0", r"-5", r"0"],
+                    [r"10", r"0", r"3/2", r"1", r"1", r"-1/2", r"0"],
+                    [r"10", r"1", r"1/2", r"1", r"0", r"1/2", r"0"],
+                    [r"0", r"0", r"1", r"-1", r"0", r"-1", r"1"]
                 ],
-                "basis": [r"s_1", r"x_1", r"s_3"],
-                "z_val": r"{-100}"
+                "basis": [r"\text{Z}", r"x_4", r"x_1", r"x_6"],
+                "z_val": r"-100",
+                "solution": "[10, 0, 0]"
             },
             2: {  # Vertex B
                 "matrix": [
-                    [r"10", r"0", r"0", r"3/2", r"1/2", r"1", r"{-1/2}", r"0"],
-                    [r"10", r"0", r"1", r"1/2", r"1", r"0", r"1/2", r"0"],
-                    [r"0", r"0", r"0", r"1", r"{-1}", r"0", r"{-1}", r"1"]
+                    [r"--", r"0", r"4", r"0", r"-2", r"-4", r"0"],
+                    [r"10", r"0", r"3/2", r"1", r"1", r"-1/2", r"0"],
+                    [r"0", r"1", r"-1", r"0", r"-1", r"1", r"0"],
+                    [r"10", r"0", r"5/2", r"0", r"1", r"-3/2", r"1"]
                 ],
-                "basis": [r"s_1", r"x_3", r"s_3"],
-                "z_val": r"{-120}"
+                "basis": [r"\text{Z}", r"x_3", r"x_1", r"x_6"],
+                "z_val": r"-120",
+                "solution": "[0, 0, 10]"
             },
-            3: {  # Vertex C
+            3: {  # Vertex E (Optimal)
                 "matrix": [
-                    [r"10", r"0", r"0", r"1", r"0", r"1", r"{-1}", r"0"],
-                    [r"10", r"0", r"1", r"0", r"1", r"0", r"1/2", r"0"],
-                    [r"0", r"0", r"0", r"0", r"0", r"0", r"0", r"1"]
+                    [r"--", r"0", r"0", r"0", r"-18/5", r"-8/5", r"-8/5"],
+                    [r"4", r"0", r"0", r"1", r"2/5", r"2/5", r"-3/5"],
+                    [r"4", r"1", r"0", r"0", r"-3/5", r"2/5", r"2/5"],
+                    [r"4", r"0", r"1", r"0", r"2/5", r"-3/5", r"2/5"]
                 ],
-                "basis": [r"x_2", r"x_1", r"s_3"],
-                "z_val": r"{-120}"
-            },
-            4: {  # Vertex E (Optimal)
-                "matrix": [
-                    [r"4", r"0", r"0", r"0", r"1", r"3/5", r"2/5", r"{-2/5}"],
-                    [r"4", r"0", r"1", r"0", r"0", r"{-2/5}", r"3/5", r"{-1/5}"],
-                    [r"4", r"0", r"0", r"1", r"0", r"{-1/5}", r"{-1/5}", r"3/5"]
-                ],
-                "basis": [r"x_3", r"x_1", r"x_2"],
-                "z_val": r"{-136}"
+                "basis": [r"\text{Z}", r"x_3", r"x_1", r"x_2"],
+                "z_val": r"-136",
+                "solution": "[4, 4, 4]"
             }
         }
         
-        # Path: A → D → B → C → E
+        # Path: A → D → B → E (Note: Path changed based on provided data)
         path_data = [
             (A, D, "D(10, 0, 0)", 1),
             (D, B, "B(0, 0, 10)", 2),
-            (B, C, "C(0, 10, 0)", 3),
-            (C, E, "E(4, 4, 4)", 4),
+            (B, E, "E(4, 4, 4)", 3),
         ]
         
         # Start Tableau (Vertex A)
@@ -178,10 +176,11 @@ class SimplexPath3D(ThreeDScene):
             initial_data["matrix"],
             initial_data["basis"],
             initial_data["z_val"],
+            initial_data["solution"],
             is_optimal=False
-        ).scale(0.55).to_corner(DR).shift(UP * 0.3 + LEFT * 0.2)
+        ).scale(0.68).to_corner(UR).shift(DOWN * 1.0 + LEFT * 0.3)
         
-        initial_vertex_text = Text("Starting Vertex: A(0, 0, 0)", font_size=24, color=YELLOW).to_edge(UP).shift(DOWN * 0.5)
+        initial_vertex_text = Text("Starting Vertex: A(0, 0, 0)", font_size=20, color=YELLOW).to_edge(DOWN).shift(UP * 0.3)
         
         self.add_fixed_in_frame_mobjects(current_tableau, initial_vertex_text)
         self.play(FadeIn(current_tableau, shift=UP), Write(initial_vertex_text), run_time=1)
@@ -196,16 +195,17 @@ class SimplexPath3D(ThreeDScene):
                 data["matrix"],
                 data["basis"],
                 data["z_val"],
-                is_optimal=(tableau_idx == 4)
-            ).scale(0.55).to_corner(DR).shift(UP * 0.3 + LEFT * 0.2)
+                data["solution"],
+                is_optimal=(tableau_idx == 3)
+            ).scale(0.68).to_corner(UR).shift(DOWN * 1.0 + LEFT * 0.3)
             
             # Current vertex text
             current_vertex_text = Text(
-                f"Pivot to Vertex: {vertex_label}",
-                font_size=24,
+                f"Pivot to: {vertex_label}",
+                font_size=20,
                 color=RED,
                 weight=BOLD
-            ).to_edge(UP).shift(DOWN * 0.5)
+            ).to_edge(DOWN).shift(UP * 0.3)
 
             # Create arrow for movement
             path_arrow = Arrow3D(
@@ -229,7 +229,7 @@ class SimplexPath3D(ThreeDScene):
             self.wait(1)
 
             # Clean up for next iteration
-            if i < 3:
+            if i < len(path_data) - 1:
                 self.play(FadeOut(current_vertex_text), run_time=0.5)
             else:
                 self.remove(current_vertex_text)
@@ -249,21 +249,21 @@ class SimplexPath3D(ThreeDScene):
         optimal_banner = VGroup(
             Text(
                 "OPTIMAL SOLUTION FOUND!",
-                font_size=32,
+                font_size=26,
                 color=GOLD,
                 weight=BOLD
             ),
             MathTex(
                 r"x_1 = 4, \quad x_2 = 4, \quad x_3 = 4",
-                font_size=26,
+                font_size=22,
                 color=YELLOW
             ),
             MathTex(
                 r"Z_{\text{min}} = -136",
-                font_size=28,
+                font_size=24,
                 color=GREEN_E
             )
-        ).arrange(DOWN, buff=0.3).to_corner(UL).shift(DOWN * 1.5)
+        ).arrange(DOWN, buff=0.25).to_edge(LEFT).shift(UP * 2 + RIGHT * 0.5)
         
         self.add_fixed_in_frame_mobjects(optimal_banner)
         self.play(Write(optimal_banner), run_time=2)
@@ -274,50 +274,59 @@ class SimplexPath3D(ThreeDScene):
         self.stop_ambient_camera_rotation()
         self.wait(2)
     
-    def create_tableau(self, matrix_data, basis_labels, z_val, is_optimal=False):
-        """Create a full Simplex tableau display with 4 rows and 8 columns"""
+    def create_tableau(self, matrix_data, basis_labels, z_val, solution, is_optimal=False):
+        """Create a full Simplex tableau display with corrected format"""
         
-        # Header row: RHS, Z, x1, x2, x3, s1, s2, s3
-        header = [r"\text{RHS}", r"\text{Z}", r"x_1", r"x_2", r"x_3", r"s_1", r"s_2", r"s_3"]
+        # Header row: RHS, x1, x2, x3, x4, x5, x6
+        header = [r"\text{RHS}", r"x_1", r"x_2", r"x_3", r"x_4", r"x_5", r"x_6"]
         
-        # Combine header with matrix data
+        # Combine header with matrix data (4 rows: Z-row + 3 constraint rows)
         table_data = [header] + matrix_data
         
-        # Create table with proper sizing
+        # Create table with balanced sizing
         table = MathTable(
             table_data,
             include_outer_lines=True,
-            h_buff=0.25,
-            v_buff=0.25,
-            element_to_mobject=lambda t: MathTex(t, font_size=16)
+            h_buff=0.32,
+            v_buff=0.28,
+            element_to_mobject=lambda t: MathTex(t, font_size=18)
         )
         
-        # Add basis labels to the left of each data row
+        # Add basis labels to the left of each row (including Z-row)
         basis_group = VGroup()
         for i, basis_var in enumerate(basis_labels):
-            label = MathTex(basis_var, font_size=16, color=YELLOW)
-            # Position labels to the left of each data row (skip header row)
+            label = MathTex(basis_var, font_size=18, color=YELLOW if i > 0 else BLUE)
+            # Position labels to the left of each row
             row_position = table.get_rows()[i + 1].get_left()
-            label.next_to(row_position, LEFT, buff=0.3)
+            label.next_to(row_position, LEFT, buff=0.32)
             basis_group.add(label)
         
-        # Create Z-value display
+        # Create solution and Z-value display
+        solution_display = Text(
+            f"Solution: {solution}",
+            font_size=18,
+            color=YELLOW
+        )
+        
         z_display = MathTex(
             f"Z = {z_val}",
-            font_size=20,
-            color=GREEN if is_optimal else BLUE
-        ).next_to(table, DOWN, buff=0.3)
+            font_size=22,
+            color=GREEN if is_optimal else BLUE,
+            weight=BOLD if is_optimal else NORMAL
+        )
+        
+        info_group = VGroup(solution_display, z_display).arrange(RIGHT, buff=0.5).next_to(table, DOWN, buff=0.3)
         
         # Title
         title = Text(
             "Simplex Tableau" if not is_optimal else "OPTIMAL TABLEAU",
-            font_size=20,
+            font_size=22,
             weight=BOLD,
             color=GOLD if is_optimal else BLUE_B
         )
         
         # Arrange all components
-        tableau_content = VGroup(title, table, basis_group, z_display).arrange(DOWN, buff=0.25)
+        tableau_content = VGroup(title, table, basis_group, info_group).arrange(DOWN, buff=0.28)
         
         # Add background rectangle
         bg_rect = SurroundingRectangle(
@@ -325,7 +334,7 @@ class SimplexPath3D(ThreeDScene):
             color=GOLD if is_optimal else BLUE,
             fill_opacity=0.15,
             stroke_width=3 if is_optimal else 2,
-            buff=0.25
+            buff=0.28
         )
         
         return VGroup(bg_rect, tableau_content)
